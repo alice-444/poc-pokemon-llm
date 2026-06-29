@@ -1,0 +1,29 @@
+# --- Environnement Python ---
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# --- Modèle entraîné (poids volumineux, régénérables via src/train.py) ---
+# On garde uniquement le script d'inférence, on ignore les poids et configs du modèle.
+best_pokemon_model/*
+!best_pokemon_model/generate.py
+
+# --- Sorties d'entraînement ---
+results/
+logs/
+
+# --- MLflow ---
+mlruns/
+mlflow.db
+
+# --- DVC : les données sont versionnées par DVC, pas par Git ---
+# (data/.gitignore gère déjà raw_pokemons.json et pokedex_instructions.json)
+/data/*.json
+
+# --- Système ---
+.DS_Store
+Thumbs.db
