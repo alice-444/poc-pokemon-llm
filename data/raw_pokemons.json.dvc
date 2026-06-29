@@ -1,0 +1,5 @@
+outs:
+- md5: 4a5ea93c6330f52c08546c6978549418
+  size: 66176
+  hash: md5
+  path: raw_pokemons.json
