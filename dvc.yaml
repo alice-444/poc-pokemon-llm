@@ -1,0 +1,8 @@
+stages:
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+    - data/raw_pokemons.json
+    - src/prepare.py
+    outs:
+    - data/pokedex_instructions.json

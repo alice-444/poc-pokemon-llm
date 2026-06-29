@@ -1,0 +1,18 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+    - path: data/raw_pokemons.json
+      hash: md5
+      md5: 4a5ea93c6330f52c08546c6978549418
+      size: 66176
+    - path: src/prepare.py
+      hash: md5
+      md5: 3f38037022812c0f8c1ed4b8e44255b4
+      size: 2342
+    outs:
+    - path: data/pokedex_instructions.json
+      hash: md5
+      md5: 49e7d4d655c06d8388ff55c56864c046
+      size: 146849
