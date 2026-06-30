@@ -74,7 +74,7 @@ training_args = TrainingArguments(
 
 ## `AttributeError: ... 'parse_pretrained'`
 
-**Cause** : `AutoTokenizer.parse_pretrained` n'existe pas. Le code de [`src/train.py`](../src/train.py) contient un garde-fou `hasattr(...)` qui retombe sur `from_pretrained`, mais cette ligne est trompeuse.
+**Cause** : `AutoTokenizer.parse_pretrained` n'existe pas. D'anciennes versions de [`src/train.py`](../src/train.py) tentaient cet appel derrière un garde-fou `hasattr(...)` trompeur (jamais vrai). Le code utilise désormais directement `from_pretrained`.
 
 **Solution** : utiliser directement la bonne méthode :
 

@@ -22,7 +22,7 @@ def train_pokemon_llm(ci_mode=False):
         os.environ["HF_MLFLOW_LOG_ARTIFACTS"] = "True"
     
     print(f"Chargement du modèle et du tokenizer : {model_name}...")
-    tokenizer = AutoTokenizer.parse_pretrained(model_name) if hasattr(AutoTokenizer, 'parse_pretrained') else AutoTokenizer.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
     # Assigner un token de padding si non existant (cas classique de GPT/Llama)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
