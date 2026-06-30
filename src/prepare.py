@@ -13,15 +13,24 @@ def format_to_instructions(raw_data_path, output_path):
         # Traduction rapide des types pour avoir des prompts en Français propre
         types_fr = ", ".join(p["types"]).replace("electric", "Électrik").replace("fire", "Feu").replace("water", "Eau").replace("grass", "Plante").replace("poison", "Poison").replace("flying", "Vol").replace("bug", "Insecte").replace("normal", "Normal")
         
-        # Formatter les statistiques pour le texte
-        stats_txt = f"PV: {p['stats']['hp']}, Attaque: {p['stats']['attack']}, Défense: {p['stats']['defense']}, Vitesse: {p['stats']['speed']}"
+        # Formatter les statistiques pour le texte (on exploite aussi les stats spéciales)
+        stats_txt = (
+            f"PV: {p['stats']['hp']}, Attaque: {p['stats']['attack']}, "
+            f"Défense: {p['stats']['defense']}, "
+            f"Attaque Spéciale: {p['stats']['special-attack']}, "
+            f"Défense Spéciale: {p['stats']['special-defense']}, "
+            f"Vitesse: {p['stats']['speed']}"
+        )
+
+        # Phrase sur les talents — omise si le Pokémon n'en a aucun (évite « Ses talents sont : . »)
         talents = ", ".join(p["abilities"])
-        
+        talents_txt = f"Ses talents sont : {talents}. " if talents else ""
+
         # La réponse textuelle que le LLM devra générer
         reponse = (
             f"{p['name']} est un Pokémon de type {types_fr}. "
             f"Il mesure {p['height']}m et pèse {p['weight']}kg. "
-            f"Ses talents sont : {talents}. "
+            f"{talents_txt}"
             f"Ses statistiques de base sont - {stats_txt}."
         )
         

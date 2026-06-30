@@ -104,7 +104,7 @@ Chaque entrée suit le schéma `instruction / input / output` :
 {
     "instruction": "Donne-moi la fiche Pokedex de Bulbasaur.",
     "input": "",
-    "output": "Bulbasaur est un Pokémon de type Plante, Poison. Il mesure 0.7m et pèse 6.9kg. Ses talents sont : overgrow. Ses statistiques de base sont - PV: 45, Attaque: 49, Défense: 49, Vitesse: 45."
+    "output": "Bulbasaur est un Pokémon de type Plante, Poison. Il mesure 0.7m et pèse 6.9kg. Ses talents sont : overgrow. Ses statistiques de base sont - PV: 45, Attaque: 49, Défense: 49, Attaque Spéciale: 65, Défense Spéciale: 65, Vitesse: 45."
 }
 ```
 

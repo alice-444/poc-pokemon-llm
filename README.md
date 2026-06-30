@@ -21,7 +21,7 @@ Entraîner un modèle conversationnel léger à répondre à des questions du ty
 
 > **Q :** « Donne-moi la fiche Pokedex de Bulbasaur. »
 >
-> **R :** « Bulbasaur est un Pokémon de type Plante, Poison. Il mesure 0.7m et pèse 6.9kg. Ses talents sont : overgrow. Ses statistiques de base sont - PV: 45, Attaque: 49, Défense: 49, Vitesse: 45. »
+> **R :** « Bulbasaur est un Pokémon de type Plante, Poison. Il mesure 0.7m et pèse 6.9kg. Ses talents sont : overgrow. Ses statistiques de base sont - PV: 45, Attaque: 49, Défense: 49, Attaque Spéciale: 65, Défense Spéciale: 65, Vitesse: 45. »
 
 ---
 
@@ -55,13 +55,17 @@ flowchart LR
 ## 📦 Détail des étapes
 
 ### 1. Extraction — `src/extract.py`
+
 Récupère les **151 premiers Pokémon** depuis [PokéAPI](https://pokeapi.co/), avec une pause de 0,5 s entre chaque requête pour respecter l'API. Pour chaque Pokémon, on ne conserve que les informations utiles : `id`, `name`, `types`, `stats`, `abilities` (hors talents cachés), `height` (en mètres) et `weight` (en kg).
 
 ### 2. Préparation — `src/prepare.py`
+
 Transforme les données brutes en un **dataset d'instructions** au format `{instruction, input, output}`. Les types sont traduits en français et, pour chaque Pokémon, **3 variantes de questions** sont générées (augmentation de données) → **453 paires** d'entraînement (151 × 3).
 
 ### 3. Fine-tuning — `src/train.py`
+
 Fine-tune le modèle de base **`TinyLlama/TinyLlama-1.1B-Chat-v1.0`** avec la librairie 🤗 `transformers` :
+
 - 3 epochs, batch size 2, learning rate `5e-5`, longueur max 256 tokens
 - Précision mixte (`fp16`) automatique si un GPU est disponible
 - Suivi des métriques et des artefacts via **MLflow**
@@ -122,12 +126,14 @@ dvc repro         # remplace l'étape (2) : rejoue « prepare » si une dépenda
 > ℹ️ `dvc pull` et `python src/extract.py` produisent le même fichier `raw_pokemons.json` : utilise l'un **ou** l'autre, pas les deux. Idem pour `dvc repro` et `python src/prepare.py`.
 
 ### Suivre l'entraînement avec MLflow
+
 ```bash
 mlflow ui                 # puis ouvrir http://localhost:5000
 ```
 L'expérience est enregistrée sous le nom **`pokemon-llm-finetuning`** (base `mlflow.db`, artefacts dans `mlruns/`).
 
 ### Interroger le modèle fine-tuné (inférence)
+
 Une fois l'entraînement terminé, le modèle est disponible dans `best_pokemon_model/`. Un script prêt à l'emploi est fourni :
 
 ```bash
