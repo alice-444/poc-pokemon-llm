@@ -39,11 +39,18 @@ def fetch_pokemon_data(limit=151):
     return pokemons_list
 
 if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Extraction des Pokémon depuis PokéAPI")
+    parser.add_argument("--limit", type=int, default=151,
+                        help="Nombre de Pokémon à extraire (défaut : 151, réduire pour la CI)")
+    args = parser.parse_args()
+
     # S'assurer que le dossier data existe
     os.makedirs("data", exist_ok=True)
     
     # Lancement de l'extraction
-    all_data = fetch_pokemon_data(limit=151)
+    all_data = fetch_pokemon_data(limit=args.limit)
     
     # Sauvegarde dans le dossier data/raw_pokemons.json
     output_path = "data/raw_pokemons.json"
