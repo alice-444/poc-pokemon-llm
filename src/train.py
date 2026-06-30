@@ -6,7 +6,7 @@ from transformers import (
     AutoTokenizer,
     TrainingArguments,
     Trainer,
-    DataCollatorForLanguageModeling
+    DataCollatorForSeq2Seq
 )
 
 def train_pokemon_llm(ci_mode=False):
@@ -33,17 +33,36 @@ def train_pokemon_llm(ci_mode=False):
     # Charger le fichier JSON généré à la Phase 3
     dataset = load_dataset("json", data_files={"train": "data/pokedex_instructions.json"})
 
-    # Fonction pour formater le texte selon le template attendu par le modèle
+    # Fonction pour formater et tokeniser chaque exemple selon le template attendu.
+    # On tokenise SANS padding (le data collator s'en charge dynamiquement par batch)
+    # et on masque la partie « prompt » dans les labels : la loss ne porte que sur la réponse.
+    MAX_LENGTH = 256
+
     def format_prompts(examples):
-        texts = []
+        input_ids_list, attention_list, labels_list = [], [], []
         for inst, out in zip(examples["instruction"], examples["output"]):
-            # Format d'instruction standard
-            text = f"### Instruction:\n{inst}\n\n### Réponse:\n{out}{tokenizer.eos_token}"
-            texts.append(text)
-        
-        # Tokenisation du texte complet
-        inputs = tokenizer(texts, truncation=True, max_length=256, padding="max_length")
-        return inputs
+            prompt = f"### Instruction:\n{inst}\n\n### Réponse:\n"
+            # L'<eos> final apprend au modèle à s'arrêter ; il reste un label valide
+            # (non masqué) car le padding est géré séparément avec label = -100.
+            full = f"{prompt}{out}{tokenizer.eos_token}"
+
+            full_ids = tokenizer(full, truncation=True, max_length=MAX_LENGTH)["input_ids"]
+            prompt_len = len(tokenizer(prompt)["input_ids"])
+
+            # labels = input_ids, mais on masque les tokens du prompt (loss = réponse seule)
+            labels = list(full_ids)
+            for i in range(min(prompt_len, len(labels))):
+                labels[i] = -100
+
+            input_ids_list.append(full_ids)
+            attention_list.append([1] * len(full_ids))
+            labels_list.append(labels)
+
+        return {
+            "input_ids": input_ids_list,
+            "attention_mask": attention_list,
+            "labels": labels_list,
+        }
 
     tokenized_dataset = dataset.map(format_prompts, batched=True, remove_columns=dataset["train"].column_names)
 
@@ -84,7 +103,10 @@ def train_pokemon_llm(ci_mode=False):
         model=model,
         args=training_args,
         train_dataset=tokenized_dataset["train"],
-        data_collator=DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False),
+        # Padding dynamique par batch : pad les input_ids avec pad_token et les labels avec -100
+        data_collator=DataCollatorForSeq2Seq(
+            tokenizer=tokenizer, model=model, padding=True, label_pad_token_id=-100
+        ),
     )
 
     # 5. Lancer l'entraînement

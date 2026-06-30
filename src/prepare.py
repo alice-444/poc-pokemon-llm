@@ -1,4 +1,3 @@
-import os
 import json
 
 # Traduction des types Pokémon en français (couvre toute la 1re génération).
