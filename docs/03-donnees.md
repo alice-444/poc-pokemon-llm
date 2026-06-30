@@ -82,7 +82,7 @@ Transforme les données brutes en un **dataset d'instructions** prêt pour le fi
 
 ### Transformations appliquées
 
-1. **Traduction des types** en français (`grass` → `Plante`, `fire` → `Feu`, `water` → `Eau`, etc.).
+1. **Traduction des types** en français via le dictionnaire `TYPES_FR` (`grass` → `Plante`, `fire` → `Feu`, `ground` → `Sol`, etc.) — les 15 types de la 1ʳᵉ génération sont couverts ; tout type inconnu est conservé tel quel.
 2. **Formatage de la réponse** en une phrase descriptive type fiche Pokédex.
 3. **Augmentation de données** : 3 formulations de question par Pokémon.
 
@@ -104,7 +104,7 @@ Chaque entrée suit le schéma `instruction / input / output` :
 {
     "instruction": "Donne-moi la fiche Pokedex de Bulbasaur.",
     "input": "",
-    "output": "Bulbasaur est un Pokémon de type Plante, Poison. Il mesure 0.7m et pèse 6.9kg. Ses talents sont : overgrow. Ses statistiques de base sont - PV: 45, Attaque: 49, Défense: 49, Vitesse: 45."
+    "output": "Bulbasaur est un Pokémon de type Plante, Poison. Il mesure 0.7m et pèse 6.9kg. Ses talents sont : overgrow. Ses statistiques de base sont - PV: 45, Attaque: 49, Défense: 49, Attaque Spéciale: 65, Défense Spéciale: 65, Vitesse: 45."
 }
 ```
 
