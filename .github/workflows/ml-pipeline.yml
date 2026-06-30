@@ -1,0 +1,121 @@
+name: 🔴 Pokémon LLM — ML Pipeline
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ml-pipeline-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ──────────────────────────────────────────────
+  # Job 1 : Extraction des données depuis PokéAPI
+  # ──────────────────────────────────────────────
+  extract:
+    name: 📥 Extraction des données
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 📂 Checkout du code
+        uses: actions/checkout@v6
+
+      - name: 🐍 Setup Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: 📦 Installation des dépendances (extraction)
+        run: pip install "requests>=2.31"
+
+      - name: 🌐 Extraction des Pokémon (dataset réduit pour CI)
+        run: python src/extract.py --limit 10
+
+      - name: ⬆️ Upload des données brutes
+        uses: actions/upload-artifact@v4
+        with:
+          name: raw-data
+          path: data/raw_pokemons.json
+          retention-days: 3
+
+  # ──────────────────────────────────────────────
+  # Job 2 : Préparation du dataset d'instructions
+  # ──────────────────────────────────────────────
+  prepare:
+    name: 🔧 Préparation du dataset
+    runs-on: ubuntu-latest
+    needs: extract
+    timeout-minutes: 5
+
+    steps:
+      - name: 📂 Checkout du code
+        uses: actions/checkout@v6
+
+      - name: 🐍 Setup Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: 📥 Récupération des données brutes
+        uses: actions/download-artifact@v4
+        with:
+          name: raw-data
+          path: data/
+
+      - name: ⚙️ Préparation du dataset d'instructions
+        run: python src/prepare.py
+
+      - name: 🔬 Validation des données
+        run: python src/validate.py --min-count 10
+
+      - name: ⬆️ Upload du dataset préparé
+        uses: actions/upload-artifact@v4
+        with:
+          name: prepared-data
+          path: |
+            data/raw_pokemons.json
+            data/pokedex_instructions.json
+          retention-days: 3
+
+  # ──────────────────────────────────────────────
+  # Job 3 : Fine-tuning du modèle (mode CI léger)
+  # ──────────────────────────────────────────────
+  train:
+    name: 🧠 Entraînement du modèle (CI)
+    runs-on: ubuntu-latest
+    needs: prepare
+    timeout-minutes: 30
+
+    steps:
+      - name: 📂 Checkout du code
+        uses: actions/checkout@v6
+
+      - name: 🐍 Setup Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: 📦 Installation des dépendances complètes
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 📥 Récupération du dataset préparé
+        uses: actions/download-artifact@v4
+        with:
+          name: prepared-data
+          path: data/
+
+      - name: 🚀 Fine-tuning en mode CI (léger, CPU)
+        run: python src/train.py --ci
+
+      - name: ⬆️ Upload du modèle entraîné
+        uses: actions/upload-artifact@v4
+        with:
+          name: trained-model
+          path: best_pokemon_model/
+          retention-days: 5
