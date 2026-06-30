@@ -47,9 +47,13 @@ Le texte d'entraînement assemble instruction et réponse selon ce format (le **
 {output}<eos>
 ```
 
-- `<eos>` (token de fin) est ajouté pour apprendre au modèle à **s'arrêter**.
-- Tokenisation : `max_length=256`, `truncation=True`, `padding="max_length"`.
+- `<eos>` (token de fin) est ajouté pour apprendre au modèle à **s'arrêter**. Il reste un *label* valide (non masqué), donc le modèle apprend effectivement à le générer.
+- Tokenisation : `max_length=256`, `truncation=True`, **sans padding fixe** — le padding est appliqué dynamiquement par batch via `DataCollatorForSeq2Seq` (plus rapide qu'un `padding="max_length"` systématique).
 - Si le tokenizer n'a pas de token de padding, on lui assigne le token `eos`.
+
+### Masquage des labels (loss sur la réponse uniquement)
+
+Les `labels` sont construits manuellement à partir des `input_ids`, puis **la portion prompt** (`### Instruction: … ### Réponse:`) est masquée avec `-100`. La perte n'est donc calculée que sur la **réponse** générée, pas sur la question — pratique standard en instruction-tuning. Le padding de fin de séquence est lui aussi masqué (`label_pad_token_id=-100`) par le data collator, ce qui évite que l'`<eos>` significatif ne soit confondu avec du remplissage.
 
 ## Hyperparamètres (`TrainingArguments`)
 
