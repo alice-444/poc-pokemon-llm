@@ -1,4 +1,4 @@
-# 🔴 PoC — Pokémon LLM
+# PoC — Pokémon LLM
 
 ![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white)
@@ -194,4 +194,4 @@ Distribué sous licence **MIT**. Les données proviennent de [PokéAPI](https://
 
 ## 🙋 Auteur
 
-Réalisé par [@alice-444](https://github.com/alice-444) — projet de démonstration MLOps.
+Réalisés par [@alice-444](https://github.com/alice-444) & [@remimoul](https://github.com/remimoul).
