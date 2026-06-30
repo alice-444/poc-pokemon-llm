@@ -1,6 +1,26 @@
 import os
 import json
 
+# Traduction des types Pokémon en français (couvre toute la 1re génération).
+# Tout type absent du dictionnaire est conservé tel quel (capitalisé) par sécurité.
+TYPES_FR = {
+    "normal": "Normal",
+    "fire": "Feu",
+    "water": "Eau",
+    "electric": "Électrik",
+    "grass": "Plante",
+    "ice": "Glace",
+    "fighting": "Combat",
+    "poison": "Poison",
+    "ground": "Sol",
+    "flying": "Vol",
+    "psychic": "Psy",
+    "bug": "Insecte",
+    "rock": "Roche",
+    "ghost": "Spectre",
+    "dragon": "Dragon",
+}
+
 def format_to_instructions(raw_data_path, output_path):
     print(f"Transformation des données depuis {raw_data_path}...")
     
@@ -10,8 +30,8 @@ def format_to_instructions(raw_data_path, output_path):
     instruction_dataset = []
     
     for p in pokemons:
-        # Traduction rapide des types pour avoir des prompts en Français propre
-        types_fr = ", ".join(p["types"]).replace("electric", "Électrik").replace("fire", "Feu").replace("water", "Eau").replace("grass", "Plante").replace("poison", "Poison").replace("flying", "Vol").replace("bug", "Insecte").replace("normal", "Normal")
+        # Traduction des types en français, type par type (mapping complet et sûr)
+        types_fr = ", ".join(TYPES_FR.get(t, t.capitalize()) for t in p["types"])
         
         # Formatter les statistiques pour le texte (on exploite aussi les stats spéciales)
         stats_txt = (

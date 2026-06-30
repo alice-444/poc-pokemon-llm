@@ -14,15 +14,13 @@ Ce projet est un **PoC pédagogique** : il démontre une chaîne MLOps complète
 | **Pas d'évaluation de modèle**      | Aucune métrique de qualité (exactitude des fiches, hallucinations) n'est calculée — seule la `loss` est suivie. La validation existante (`validate.py`) porte sur l'intégrité des **données**, pas sur la qualité du modèle.                                                      |
 | **Fine-tuning complet**             | Tous les poids sont mis à jour : coûteux en mémoire, peu adapté à du matériel léger.                                                                                 |
 | **Pas de séparation train/val**     | Le dataset n'est pas découpé : pas de mesure d'overfitting.                                                                                                          |
-| **Traduction des types incomplète** | Le mapping FR dans `prepare.py` ne couvre que certains types ; d'autres restent en anglais.                                                                          |
 
 ## Pistes d'amélioration
 
 ### Données
 
 - **Enrichir le dataset** : descriptions Pokédex officielles, évolutions, faiblesses/résistances, plus de reformulations.
-- **Étendre aux générations suivantes** (PokéAPI en propose plus de 1000).
-- **Compléter la traduction des types** dans [`src/prepare.py`](../src/prepare.py).
+- **Étendre aux générations suivantes** (PokéAPI en propose plus de 1000) — penser à compléter le dictionnaire `TYPES_FR` de [`src/prepare.py`](../src/prepare.py) avec les types des nouvelles générations (`steel`, `dark`, `fairy`).
 
 ### Entraînement
 
