@@ -53,6 +53,25 @@ model.to("cuda" if torch.cuda.is_available() else "cpu")
 
 ---
 
+## `TypeError: TrainingArguments.__init__() got an unexpected keyword argument 'no_cuda'`
+
+```
+TypeError: TrainingArguments.__init__() got an unexpected keyword argument 'no_cuda'
+```
+
+**Cause** : les versions récentes de Transformers ont supprimé l'argument `no_cuda` de `TrainingArguments` au profit de `use_cpu` (même effet : forcer l'entraînement sur CPU). Survient typiquement en mode CI (`train.py --ci`).
+
+**Solution** : dans [`src/train.py`](../src/train.py), remplacer `no_cuda=True` par `use_cpu=True`.
+
+```python
+training_args = TrainingArguments(
+    ...
+    use_cpu=True,   # force le CPU (ex- no_cuda)
+)
+```
+
+---
+
 ## `AttributeError: ... 'parse_pretrained'`
 
 **Cause** : `AutoTokenizer.parse_pretrained` n'existe pas. Le code de [`src/train.py`](../src/train.py) contient un garde-fou `hasattr(...)` qui retombe sur `from_pretrained`, mais cette ligne est trompeuse.

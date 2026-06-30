@@ -62,7 +62,7 @@ def train_pokemon_llm(ci_mode=False):
             report_to="none",                  # Pas de MLflow en CI
             logging_dir="./logs",
             fp16=False,                        # Pas de GPU en CI
-            no_cuda=True,                      # Force le CPU
+            use_cpu=True,                      # Force le CPU
         )
     else:
         # 3. Configurer les arguments d'entraînement
