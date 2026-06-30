@@ -11,7 +11,7 @@ Preuve de concept (PoC) d'un pipeline MLOps complet pour **fine-tuner un petit m
 
 Le projet illustre une chaîne de bout en bout : **extraction de données → préparation → fine-tuning supervisé**, avec versionnage des données via **DVC** et suivi des expériences via **MLflow**.
 
-> 📚 **Documentation complète** dans le dossier [`docs/`](docs/README.md) : installation, architecture, données, entraînement, inférence, suivi MLflow/DVC, dépannage et limites.
+> 📚 **Documentation complète** dans le dossier [`docs/`](docs/README.md) : installation, architecture, données, entraînement, inférence, suivi MLflow/DVC, dépannage, limites et CI/CD.
 
 ---
 
@@ -154,11 +154,13 @@ poc-pokemon-llm/
 ├── src/
 │   ├── extract.py                   # 1. extraction PokéAPI
 │   ├── prepare.py                   # 2. mise en forme du dataset
+│   ├── validate.py                  # validation d'intégrité des données (CI)
 │   └── train.py                     # 3. fine-tuning + MLflow
 ├── best_pokemon_model/              # modèle fine-tuné final
 ├── results/                         # checkpoints d'entraînement
 ├── mlruns/ , mlflow.db              # tracking MLflow
 ├── dvc.yaml , dvc.lock              # définition du pipeline DVC
+├── .github/workflows/               # pipeline CI/CD (GitHub Actions)
 └── notebooks/                       # exploration
 ```
 
@@ -172,6 +174,7 @@ poc-pokemon-llm/
 - **TinyLlama 1.1B Chat** — modèle de base
 - **DVC** — versionnage des données et orchestration du pipeline
 - **MLflow** — suivi des expériences et des artefacts
+- **GitHub Actions** — CI : rejoue le pipeline (extract → prepare → validate → train léger) à chaque push ([détails](docs/09-ci-cd.md))
 - **PokéAPI** — source de données
 
 ---

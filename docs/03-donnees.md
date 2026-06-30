@@ -63,8 +63,13 @@ Récupère les **151 premiers Pokémon** (première génération) depuis [PokéA
 ### Lancer
 
 ```bash
-python src/extract.py
+python src/extract.py              # 151 Pokémon (défaut)
+python src/extract.py --limit 10   # dataset réduit (utilisé par la CI)
 ```
+
+| Flag      | Défaut | Effet                                                              |
+| --------- | ------ | ------------------------------------------------------------------ |
+| `--limit` | 151    | Nombre de Pokémon à extraire ; réduire pour un test rapide / la CI |
 
 > ⏱️ ~80 s (151 × 0,5 s de pause + temps réseau). Pour éviter de réinterroger l'API, le fichier est versionné via DVC : `dvc pull`.
 
@@ -112,6 +117,40 @@ python src/prepare.py
 # ou via DVC :
 dvc repro
 ```
+
+---
+
+## 3.3 Validation — `src/validate.py`
+
+### Rôle
+
+Vérifie l'**intégrité et la cohérence** des deux fichiers JSON produits avant de lancer l'entraînement. Conçu pour la [CI](09-ci-cd.md), mais lançable à tout moment en local.
+
+### Ce qui est vérifié
+
+**`raw_pokemons.json`** :
+- fichier présent et JSON valide, contenant une **liste** ;
+- au moins `--min-count` Pokémon ;
+- pour chaque entrée, présence des clés `id, name, types, stats, abilities, height, weight` ;
+- `types`/`abilities` = listes de chaînes, `stats` = dict contenant au moins `hp, attack, defense, speed`, `height`/`weight` = nombres positifs.
+
+**`pokedex_instructions.json`** :
+- liste non vide de dicts avec les clés `instruction, input, output` ;
+- `instruction` et `output` non vides ;
+- **cohérence** : `nb_instructions == nb_pokemon × 3` (3 variantes par Pokémon).
+
+### Lancer
+
+```bash
+python src/validate.py                  # min-count = 1 (défaut)
+python src/validate.py --min-count 10   # exige au moins 10 Pokémon (CI)
+```
+
+| Flag          | Défaut | Effet                                                       |
+| ------------- | ------ | ----------------------------------------------------------- |
+| `--min-count` | 1      | Nombre minimum de Pokémon attendus dans `raw_pokemons.json` |
+
+Le script sort avec le code **0** si tout est valide, **1** sinon (utilisable comme garde-fou dans un pipeline).
 
 ---
 

@@ -49,6 +49,8 @@ flowchart TD
 | 3   | [`src/train.py`](../src/train.py)                                     | `data/pokedex_instructions.json` | `best_pokemon_model/`, `results/` | [Entraînement](04-entrainement.md) |
 | 4   | [`best_pokemon_model/generate.py`](../best_pokemon_model/generate.py) | `best_pokemon_model/`            | texte                             | [Inférence](05-inference.md)       |
 
+> 🔬 Un script transverse [`src/validate.py`](../src/validate.py) contrôle l'intégrité des fichiers JSON (entre les étapes 2 et 3). Il est surtout utilisé par la [CI](09-ci-cd.md) mais peut être lancé manuellement : `python src/validate.py --min-count 10`. Détails dans [Données](03-donnees.md).
+
 ## Ordre d'exécution
 
 Les étapes **doivent** être lancées dans l'ordre, car chacune dépend de la sortie de la précédente :
@@ -81,12 +83,14 @@ poc-pokemon-llm/
 ├── src/
 │   ├── extract.py                   # (1) extraction PokéAPI
 │   ├── prepare.py                   # (2) mise en forme du dataset
+│   ├── validate.py                  # validation d'intégrité des données (CI)
 │   └── train.py                     # (3) fine-tuning + MLflow
 ├── best_pokemon_model/              # (3) modèle final
 │   └── generate.py                  # (4) script d'inférence
 ├── results/                         # (3) checkpoints intermédiaires
 ├── mlruns/ , mlflow.db              # tracking MLflow
 ├── dvc.yaml , dvc.lock              # pipeline DVC
+├── .github/workflows/               # pipeline CI/CD (GitHub Actions)
 ├── docs/                            # cette documentation
 └── notebooks/                       # exploration
 ```

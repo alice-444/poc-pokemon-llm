@@ -98,6 +98,24 @@ Pendant l'exécution :
 
 Pour suivre l'entraînement en temps réel, voir [Suivi : MLflow](06-suivi-mlflow-dvc.md).
 
+### Mode CI : `--ci`
+
+Le flag `--ci` lance un entraînement **minimal**, conçu pour valider le pipeline en intégration continue sans GPU ni temps de calcul significatif :
+
+```bash
+python src/train.py --ci
+```
+
+| Aspect             | Normal             | `--ci`                          |
+| ------------------ | ------------------ | ------------------------------- |
+| `num_train_epochs` | 3                  | 1                               |
+| Nombre de pas      | ~681               | **20 max** (`max_steps=20`)     |
+| Device             | GPU si dispo       | **CPU forcé** (`no_cuda=True`)  |
+| `fp16`             | auto               | désactivé                       |
+| Suivi MLflow       | actif              | désactivé (`report_to="none"`)  |
+
+Le modèle produit en mode CI n'a aucune valeur de qualité : l'objectif est uniquement de vérifier que l'entraînement s'exécute sans erreur. Voir [CI/CD](09-ci-cd.md).
+
 ## Aller plus loin
 
 Ce PoC fait un **fine-tuning complet** (tous les poids sont mis à jour). Pour réduire l'empreinte mémoire, on pourrait utiliser LoRA/PEFT — voir [Limites & pistes](08-limites.md).
