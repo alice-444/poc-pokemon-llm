@@ -68,7 +68,7 @@ def train_pokemon_llm(ci_mode=False):
             weight_decay=0.01,
             report_to="none",                  # Pas de MLflow en CI
             fp16=False,                        # Pas de GPU en CI
-            no_cuda=True,                      # Force le CPU
+            use_cpu=True,                      # Force le CPU (remplace no_cuda, supprimé dans transformers >= 4.45)
         )
     else:
         # 3. Configurer les arguments d'entraînement
