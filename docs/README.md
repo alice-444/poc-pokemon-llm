@@ -15,6 +15,7 @@ Pour une présentation rapide, voir le [README principal](../README.md).
 | 6 | [Suivi : MLflow & DVC](06-suivi-mlflow-dvc.md) | Tracking des expériences, versionnage des données |
 | 7 | [Dépannage](07-depannage.md) | Erreurs courantes et solutions |
 | 8 | [Limites & pistes](08-limites.md) | Limites connues du PoC et améliorations possibles |
+| 📘 | [**Documentation technique**](TECHNICAL.md) | Référence technique exhaustive — architecture modèle, configuration, CI/CD, formats de données, glossaire |
 
 ## Parcours recommandé
 
@@ -23,3 +24,5 @@ Installation (1) → Architecture (2) → Données (3) → Entraînement (4) →
 ```
 
 Les documents 6 à 8 sont transverses : consulte-les selon le besoin (suivi des runs, résolution d'un bug, ou réflexion sur l'évolution du projet).
+
+> 📘 Pour une vue complète et technique du projet (architecture du modèle, CI/CD, formats précis, glossaire), voir la [Documentation technique](TECHNICAL.md).
