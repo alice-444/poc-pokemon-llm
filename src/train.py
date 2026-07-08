@@ -10,14 +10,19 @@ from transformers import (
 )
 
 def train_pokemon_llm(ci_mode=False):
-    # 1. Définir le modèle de base (léger pour le PoC)
-    model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-    
+    # 1. Définir le modèle de base
+    # En mode CI, on utilise un modèle minuscule (~2 Mo) pour éviter le téléchargement
+    # de TinyLlama (2.1 Go) qui dépasse le timeout de GitHub Actions.
+    if ci_mode:
+        model_name = "sshleifer/tiny-gpt2"
+    else:
+        model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+
     if not ci_mode:
         # 2. Configurer MLflow (uniquement en mode normal)
         import mlflow
         mlflow.set_experiment("pokemon-llm-finetuning")
-        
+
         # Activer la sauvegarde automatique du modèle final dans les artefacts MLflow
         os.environ["HF_MLFLOW_LOG_ARTIFACTS"] = "True"
     
@@ -49,7 +54,9 @@ def train_pokemon_llm(ci_mode=False):
 
     if ci_mode:
         # Mode CI : entraînement minimal pour valider le pipeline
-        print("⚡ Mode CI activé : entraînement léger (1 epoch, 20 steps max, CPU)")
+        # Modèle : sshleifer/tiny-gpt2 (~2 Mo) pour éviter le timeout lié au
+        # téléchargement de TinyLlama (2.1 Go) sur GitHub Actions.
+        print(f"⚡ Mode CI activé : entraînement léger (1 epoch, 20 steps max, CPU) — modèle : {model_name}")
         training_args = TrainingArguments(
             output_dir="./results",
             num_train_epochs=1,
@@ -60,7 +67,6 @@ def train_pokemon_llm(ci_mode=False):
             learning_rate=5e-5,
             weight_decay=0.01,
             report_to="none",                  # Pas de MLflow en CI
-            logging_dir="./logs",
             fp16=False,                        # Pas de GPU en CI
             no_cuda=True,                      # Force le CPU
         )
@@ -74,8 +80,7 @@ def train_pokemon_llm(ci_mode=False):
             save_steps=100,
             learning_rate=5e-5,
             weight_decay=0.01,
-            report_to="mlflow",                # 💥 CRUCIAL : Dit à HF d'envoyer les logs à MLflow
-            logging_dir="./logs",
+            report_to="mlflow",                # Dit à HF d'envoyer les logs à MLflow
             fp16=torch.cuda.is_available(),    # Active la précision mixte si un GPU est dispo
         )
 
